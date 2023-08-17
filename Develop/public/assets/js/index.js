@@ -9,21 +9,8 @@ if (window.location.pathname === '/notes') {
   noteText = document.querySelector('.note-textarea');
   saveNoteBtn = document.querySelector('.save-note');
   newNoteBtn = document.querySelector('.new-note');
-  noteList = document.querySelectorAll('.list-container .list-group');
+  noteList = document.querySelectorAll('.list-group');
 }
-
-// Show an element
-const show = (elem) => {
-  elem.style.display = 'inline';
-};
-
-// Hide an element
-const hide = (elem) => {
-  elem.style.display = 'none';
-};
-
-// activeNote is used to keep track of the note in the textarea
-let activeNote = {};
 
 const getNotes = () =>
   fetch('/api/notes', {
@@ -117,25 +104,21 @@ const handleRenderSaveBtn = () => {
 };
 
 // Render the list of note titles
-const renderNoteList = async (notes) => {
-  let jsonNotes = await notes.json();
-  if (window.location.pathname === '/notes') {
-    noteList.forEach((el) => (el.innerHTML = ''));
-  }
+const renderNoteList = (notes) => {
+  noteList.innerHTML = '';
 
-  let noteListItems = [];
-
-  // Returns HTML element with or without a delete button
-  const createLi = (text, delBtn = true) => {
+    notes.forEach((note)) 
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item');
+    liEl.innerHTML = '<span class="list-item-title">${note.title}</span>';
 
-    const spanEl = document.createElement('span');
-    spanEl.classList.add('list-item-title');
-    spanEl.innerText = text;
-    spanEl.addEventListener('click', handleNoteView);
+    liEl.dataset.note = JSON.stringify(note); 
+    noteList.appendChild(liEl);
+
+    liEl.querySelector('.list-item-title').addEventListener
 
     liEl.append(spanEl);
+    };
 
     if (delBtn) {
       const delBtnEl = document.createElement('i');
