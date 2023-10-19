@@ -39,10 +39,9 @@ const deleteNote = (id) =>
     },
   })
   .then((response) => response.json())
-  .then(() => getAndRenderNotes()); // Re-fetch and render notes after deletion
+  .then(() => getAndRenderNotes()); 
 
 const renderActiveNote = () => {
-  // Your existing code for rendering active note
 };
 
 const handleNoteSave = () => {
@@ -52,15 +51,30 @@ const handleNoteSave = () => {
   };
   saveNote(newNote).then(() => {
     getAndRenderNotes();
-    renderActiveNote();
+  })
+  .catch((error) => {
+    console.error('Error saving note:', error);
   });
 };
 
 const handleNoteDelete = (e) => {
-  e.stopPropagation();
-  const note = e.target.parentElement;
-  const noteId = JSON.parse(note.dataset.note).id;
-  deleteNote(noteId);
+  e.preventDefault();
+
+  const listItem = e.target.closest('.list-group-item');
+
+  if(listItem) {
+    const noteData = JSON.parse(listItem.dataset.note);
+
+    deleteNote(noteData.id).then(() => {
+      getAndRenderNotes();
+    })
+    .catch((error) => {
+      console.error('Error deleting note:', error);
+    })
+  }
+  // const note = e.target.parentElement;
+  // const noteId = JSON.parse(note.dataset.note).id;
+  // deleteNote(noteId);
 };
 
 const handleNewNoteView = (e) => {
@@ -82,25 +96,28 @@ const renderNoteList = (notes) => {
   notes.forEach((note) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item');
-    liEl.innerHTML = `<span class="list-item-title">${note.title}</span>`;
+    liEl.innerHTML = `<span class="list-item-title">${note.title}</span>
+    <button class="btn btn-danger delete-note">Delete Note</button>`;
+    
     liEl.dataset.note = JSON.stringify(note);
 
-    const delBtnEl = document.createElement('i');
-    delBtnEl.classList.add(
-      'fas',
-      'fa-trash-alt',
-      'float-right',
-      'text-danger',
-      'delete-note'
-    );
-    delBtnEl.addEventListener('click', handleNoteDelete);
+    liEl.querySelector('.delete-note').addEventListener('click', handleNoteDelete);
+    // const delBtnEl = document.createElement('i');
+    // delBtnEl.classList.add(
+    //   'fas',
+    //   'fa-trash-alt',
+    //   'float-right',
+    //   'text-danger',
+    //   'delete-note'
+    // );
+    // delBtnEl.addEventListener('click', handleNoteDelete);
 
-    liEl.appendChild(delBtnEl);
+    // liEl.appendChild(delBtnEl);
+
     noteList.appendChild(liEl);
   });
 };
 
-// Get and render notes initially
 getAndRenderNotes();
 
 if (window.location.pathname === '/notes') {
