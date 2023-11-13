@@ -1,21 +1,21 @@
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const apiRoutes = require('./routes/apiRoutes');
-const htmlRoutes = require('./routes/htmlRoutes');
-
+const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware for parsing JSON and urlencoded form data
+// Importing route modules from the routes folder
+const apiRoutes = require("./routes/apiRoutes");
+const htmlRoutes = require("./routes/htmlRoutes");
+
+// Middleware for static files, URL encoding, and JSON parsing
+app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static('public'));
 
-app.use('/api', apiRoutes);
-app.use('/', htmlRoutes);
+// Use routes from the routes folder
+app.use("/api", apiRoutes); // API routes
+app.use("/", htmlRoutes);   // HTML routes
 
-// start server
+// Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on port: http://localhost:${PORT}`);
 });
